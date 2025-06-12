@@ -26,6 +26,13 @@ class DataLoader:
 
         lfp_data = recording_resampled.get_traces().T
 
+        lfp_data = lfp_data.reshape(32, -1, 8)
+
+        # seconds_of_data = 2_250_016 / 1250  # ≈1800 seconds (30 minutes)
+        # 60-second windows:
+        window_size = 60 * 1250  # 75,000 timesteps
+        lfp_data = lfp_data[:, :window_size, :]  # Trim to (32, 75000, 8)
+
 
         output_path = "data/lfp_data.npy"
         np.save(output_path, lfp_data)

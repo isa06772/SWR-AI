@@ -250,7 +250,7 @@ def downsample_data (data, sf, d_sf):
         return None
     
     elif sf==d_sf:
-        print("No downsaple is required")
+        print("No downsample is required")
         downsampled_data=data
 
 
@@ -274,8 +274,14 @@ def z_score_normalization(data):
         dmax = np.amax(data[:, channel])
         dmin = abs(np.amin(data[:, channel]))
         dabs = dmax if dmax>dmin else dmin
-        m = np.mean(data[:, channel] / dmax, dtype='float64') * dmax
-        s = np.std(data[:, channel] / dmax, dtype='float64') * dmax
+
+        if dmax == 0:
+            # Handle flat/zero signal (skip normalization or set to 0)
+            m, s = 0.0, 0.0
+        else:
+            m = np.mean(data[:, channel] / dmax, dtype='float64') * dmax
+            s = np.std(data[:, channel] / dmax, dtype='float64') * dmax
+            
         s = 1 if s == 0 else s # If std == 0, change it to 1, so data-mean = 0
         data[:, channel] = ((data[:, channel] - m) / s).astype('float16')
     
